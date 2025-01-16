@@ -52,7 +52,14 @@ export const SimulationFrame: FC<{
 					Share
 				</Button>
 			) : (
-				<Button className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4" onClick={() => {}}>
+				<Button 
+					className="mt-4 flex w-full flex-row items-center justify-center gap-2 py-4" 
+					onClick={() => {
+						// Format message with simulation details
+						const message = `Help needed with simulation ${simulation.id}\nStatus: ${simulation.status}${simulation.error ? `\nError: ${simulation.error}` : ''}`
+						window.open(`https://t.me/drakedanner?start=${encodeURIComponent(message)}`, '_blank')
+					}}
+				>
 					<MessageCircleQuestionIcon size={18} className="opacity-60" />
 					Get Help
 				</Button>
