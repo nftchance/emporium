@@ -1,0 +1,46 @@
+{
+    "panels": [
+      {
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [2000],
+                "type": "gt"
+              },
+              "query": {
+                "params": ["nextjs.page.render.duration{quantile=\"0.95\"}"]
+              },
+              "reducer": {"type": "avg"},
+              "type": "query"
+            }
+          ],
+          "name": "High Page Load Time",
+          "frequency": "1m",
+          "handler": 1
+        },
+        "title": "Page Load Time Alert"
+      },
+      {
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [5],
+                "type": "gt"
+              },
+              "query": {
+                "params": ["rate(app.errors[5m])"]
+              },
+              "reducer": {"type": "avg"},
+              "type": "query"
+            }
+          ],
+          "name": "High Error Rate",
+          "frequency": "1m",
+          "handler": 1
+        },
+        "title": "Error Rate Alert"
+      }
+    ]
+  }

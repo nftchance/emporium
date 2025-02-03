@@ -76,7 +76,7 @@ function generateReadme(templateString: string): string {
 		})
 
 		return templateString.replace(
-			'<__DEPLOYMENT_ADDRESSES__>',
+			'<**DEPLOYMENT_ADDRESSES**>',
 			deploymentTree.trim()
 		)
 	} catch (error) {

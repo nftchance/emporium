@@ -73,7 +73,8 @@ const nextConfig = {
 		return config
 	},
 	experimental: {
-		optimizePackageImports: []
+		optimizePackageImports: [],
+		instrumentationHook: true
 	},
 	transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"]
 }

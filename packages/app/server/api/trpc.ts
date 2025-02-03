@@ -4,13 +4,15 @@ import { type Session } from "next-auth"
 import { initTRPC, TRPCError } from "@trpc/server"
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next"
 
+import { type IncomingHttpHeaders } from "http"
 import superjson from "superjson"
 import { ZodError } from "zod"
 
+import { env } from "@/env"
 import { getServerAuthSession } from "@/server/auth"
+import type { Context } from "@/server/context"
 import { db } from "@/server/db"
 import { emitter } from "@/server/emitter"
-import { env } from "@/env"
 
 interface CreateContextOptions {
 	session: Session | null
@@ -36,7 +38,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 	})
 }
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
+const t = initTRPC.context<Context>().create({
 	transformer: superjson,
 	errorFormatter({ shape, error }) {
 		return {
@@ -48,28 +50,10 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 		}
 	}
 })
-
 export const createTRPCRouter = t.router
 
+export const router = t.router
 export const publicProcedure = t.procedure
-export const anonymousProtectedProcedure = t.procedure.use(
-	t.middleware(({ ctx, next }) => {
-		if (!ctx.session?.user)
-			throw new TRPCError({
-				code: "UNAUTHORIZED",
-				message: "isAuthenticated() failed"
-			})
-
-		return next({
-			ctx: {
-				session: {
-					...ctx.session,
-					user: ctx.session.user
-				}
-			}
-		})
-	})
-)
 export const protectedProcedure = t.procedure.use(
 	t.middleware(({ ctx, next }) => {
 		if (!ctx.session?.user)
@@ -95,27 +79,35 @@ export const protectedProcedure = t.procedure.use(
 		})
 	})
 )
-export const apiKeyProcedure = t.procedure.use(
+
+export const apiKeyProcedure = publicProcedure.use(
 	t.middleware(({ ctx, next }) => {
-		if (!ctx.headers) {
+		const apiKey = ctx.headers?.["x-api-key"]
+		if (!apiKey) {
 			throw new TRPCError({
 				code: "UNAUTHORIZED",
-				message: "No headers found"
+				message: "Missing API key"
 			})
 		}
 
-		const apiKey = ctx.headers["x-api-key"]
+		return next()
+	})
+)
 
-		if (!apiKey || apiKey !== env.SOLVER_API_KEY) {
+export const anonymousProtectedProcedure = publicProcedure.use(
+	t.middleware(({ ctx, next }) => {
+		if (!ctx.session?.user)
 			throw new TRPCError({
 				code: "UNAUTHORIZED",
-				message: "Invalid API key"
+				message: "isAuthenticated() failed"
 			})
-		}
 
 		return next({
 			ctx: {
-				isAdmin: true
+				session: {
+					...ctx.session,
+					user: ctx.session.user
+				}
 			}
 		})
 	})

@@ -1,0 +1,12 @@
+{
+    "name": "@terminallyonline/plug-monitoring",
+    "version": "0.0.1",
+    "description": "Monorepo that contains all of the key packages of Plug.",
+    "private": true,
+    "scripts": {
+        "dev": "docker-compose up",
+        "stop": "docker-compose down",
+        "clean": "docker-compose down -v",
+        "logs": "docker-compose logs -f"
+    }
+}

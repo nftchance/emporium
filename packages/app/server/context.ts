@@ -12,7 +12,8 @@ export const createContext = async (
 	opts: NodeHTTPCreateContextFnOptions<IncomingMessage, ws> | CreateNextContextOptions
 ) => ({
 	session: await getSession(opts),
-	db
+	db,
+	headers: opts.req.headers
 })
 
 export type Context = Awaited<ReturnType<typeof createContext>>
