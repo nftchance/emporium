@@ -77,6 +77,8 @@ const nextConfig = {
 		return config
 	},
 	experimental: {
+		instrumentationHook: true,
+		serverComponentsExternalPackages: ['@opentelemetry/instrumentation'],
 		optimizePackageImports: []
 	},
 	transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"]

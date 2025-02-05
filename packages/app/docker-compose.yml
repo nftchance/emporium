@@ -1,0 +1,25 @@
+services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - '9090:9090'
+    networks:
+      - my-app-network
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - '4000:3000'
+    depends_on:
+      - prometheus
+    networks:
+      - my-app-network
+
+networks:
+  my-app-network:
+    driver: bridge
